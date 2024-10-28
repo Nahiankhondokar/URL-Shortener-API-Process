@@ -6,18 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ShortUrlRequest;
 use App\Models\ShortUrl;
 use App\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ShortUrlController extends Controller
 {
     use ApiResponse;
     
-    public function shortUrl(ShortUrlRequest $request)
+    public function shortUrl(ShortUrlRequest $request): JsonResponse
     {
         $randomStr = findRandomStr();
         $shorUrlQuery = ShortUrl::query();
         
-        $existsRandomStr = (clone $shorUrlQuery)->where('shorten_url', $randomStr)->exists(); // clone for make sure separate instace
+        // clone for make sure separate instace
+        $existsRandomStr = (clone $shorUrlQuery)->where('shorten_url', $randomStr)->exists(); 
         $url = $existsOrgUrl = (clone $shorUrlQuery)->where('original_url', $request->original_url)->first();
 
         if(!$existsOrgUrl){

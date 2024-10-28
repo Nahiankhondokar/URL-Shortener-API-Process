@@ -9,5 +9,6 @@ class ShortUrl extends Model
     protected $fillable = [
         'original_url',
         'shorten_url',
+        'visitor_count'
     ];
 }
