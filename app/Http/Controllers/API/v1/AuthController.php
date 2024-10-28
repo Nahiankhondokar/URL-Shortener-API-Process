@@ -8,6 +8,7 @@ use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,12 +17,13 @@ class AuthController extends Controller
 {
     use ApiResponse;
     
-    public function index()
+    public function index(): JsonResponse
     {
-        //
+        $users = User::query()->get();
+        return $this->successApiResponse($users, "User list");
     }
 
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->all();
         if(!Auth::attempt($credentials)){
@@ -31,12 +33,10 @@ class AuthController extends Controller
         $user = Auth::user();
         $token = $request->user()->createToken('api_token')->plainTextToken;
 
-        $response['token'] = $token;
-        $response['user'] = $user;
-        return $this->successApiResponse($response, 'User login successfully');
+        return $this->successApiResponse($user, 'User login successfully', Response::HTTP_OK, ['token' => $token]);
     }
 
-    public function register(RegisterRequest $request)
+    public function register(RegisterRequest $request): JsonResponse
     {
        try {
             $user = User::query()->create($request->validated());
